@@ -25,6 +25,8 @@ namespace BrainStormerBackend.Controllers
             var projects = await _brainStormerDBContext.Projects.ToListAsync();
             return Ok(projects);
         }
+
+
         [HttpGet]
         [Route("getProjectById/{id:int}")]
         [ActionName("GetProjectById")]

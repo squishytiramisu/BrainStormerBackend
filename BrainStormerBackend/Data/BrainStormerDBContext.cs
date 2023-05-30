@@ -11,5 +11,9 @@ namespace BrainStormerBackend.Data
         }
 
         public DbSet<Project> Projects { get; set; }
+
+        public DbSet<Issue> Issues { get; set; }
+
+        public DbSet<Brainstorm> Brainstorms { get; set; }
     }
 }
