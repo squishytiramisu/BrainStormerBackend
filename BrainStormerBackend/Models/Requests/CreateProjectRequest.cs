@@ -6,7 +6,6 @@
 
         public string ProjectDescription { get; set; }
 
-        public Boolean Visibility { get; set; }
 
     }
 }

@@ -11,7 +11,7 @@
 
         public int ProjectId { get; set; }
 
-        public List<Brainstorm> Brainstorms { get; set; }
+        public List<BrainStorm> BrainStorms { get; set; }
 
     }
 }

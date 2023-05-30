@@ -4,6 +4,7 @@ using BrainStormerBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BrainStormerBackend.Migrations
 {
     [DbContext(typeof(BrainStormerDBContext))]
-    partial class BrainStormerDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230530220848_uj3")]
+    partial class uj3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,9 +60,6 @@ namespace BrainStormerBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsChosen")
-                        .HasColumnType("bit");
-
                     b.Property<int>("IssueId")
                         .HasColumnType("int");
 
@@ -74,7 +74,7 @@ namespace BrainStormerBackend.Migrations
 
                     b.HasIndex("IssueId");
 
-                    b.ToTable("BrainStorms");
+                    b.ToTable("Brainstorms");
                 });
 
             modelBuilder.Entity("BrainStormerBackend.Models.Entities.Issue", b =>

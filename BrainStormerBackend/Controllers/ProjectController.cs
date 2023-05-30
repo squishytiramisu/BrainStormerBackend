@@ -49,7 +49,7 @@ namespace BrainStormerBackend.Controllers
             {
                 Name = projectRequest.Name,
                 ProjectDescription = projectRequest.ProjectDescription,
-                Visibility = projectRequest.Visibility
+                Visibility = true
             };
             await _brainStormerDBContext.Projects.AddAsync(project);
             await _brainStormerDBContext.SaveChangesAsync();
