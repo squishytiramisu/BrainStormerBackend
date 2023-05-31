@@ -12,9 +12,9 @@ namespace BrainStormerBackend.Controllers
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
-        public ProjectController(BrainStormerDBContext brainStormerDBContext)
+        public ProjectController(BrainStormerDBContext brainStormerDbContext)
         {
-            this._brainStormerDBContext = brainStormerDBContext;
+            this._brainStormerDBContext = brainStormerDbContext;
         }
 
 
@@ -23,6 +23,7 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult>GetAllProject()
         {
             var projects = await _brainStormerDBContext.Projects.ToListAsync();
+
             return Ok(projects);
         }
 

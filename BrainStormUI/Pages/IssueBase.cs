@@ -4,30 +4,35 @@ using Shared.Models;
 
 namespace BrainStormUI.Pages
 {
-    public class ProblemsBase:ComponentBase
+    public class IssueBase : ComponentBase
     {
         [Parameter]
-        public int Id { get; set; }
+        public int ProjectId { get; set; }
+
+        [Parameter]
+        public int IssueId{ get; set; }
+
 
         [Inject]
         public IBrainStormerService BrainStormerService { get; set; }
 
-        public ProjectModel Project { get; set; }
 
         public String ProblemName { get; set; }
 
-        public IEnumerable<IssueModel> Issues { get; set; }
+        public IEnumerable<BrainStormModel> BrainStorms { get; set; }
+
+        public IssueModel Issue { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                Project = await BrainStormerService.GetProject(Id);
-                Issues = await BrainStormerService.GetIssuesByProjectId(Id);
+                Issue = await BrainStormerService.GetIssue(ProjectId);
+                BrainStorms = await BrainStormerService.GetBrainStormsByIssueId(IssueId);
             }
             catch (Exception)
             {
-                ProblemName = "No Project Found";
+                ProblemName = "Issue not found";
             }
         }
     }

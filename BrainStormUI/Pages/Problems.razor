@@ -2,6 +2,27 @@
 @page "/Projects/{Id:int}"
 @inherits ProblemsBase
 
+@code{
+
+    String NewIssueName { get; set; }
+String NewIssueDescription { get; set; }
+
+
+
+    public async Task NewIssuePressed()
+    {
+        if (NewIssueName == null || NewIssueName == "")
+        {
+            return;
+        }
+        await BrainStormerService.CreateIssue(new IssueModel { Name = NewIssueName, Description = NewIssueDescription, ProjectId = Project.Id });
+        await this.OnInitializedAsync();
+        NewIssueName = "";
+        NewIssueDescription = "";
+    }
+}
+
+
 @if (Project == null)
 {
     <h3>Loading...</h3>
@@ -9,6 +30,37 @@
 else
 {
     <h2>@Project.Name</h2>
-    <h3>@Project.ProjectDescription</h3>
+    <h4>@Project.ProjectDescription</h4>
+
+    <br/>
+
+    <h3>Problems</h3>
+
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Create a New Issue to Solve</h5>
+            <input type="text" class="form-control" placeholder="Issue Name" @bind="NewIssueName" />
+            <br />
+            <textarea class="form-control" placeholder="Issue Description" @bind="NewIssueDescription"></textarea>
+            <br />
+            <input type="button" class="btn btn-primary" value="Create" @onclick="async () => await NewIssuePressed()" />
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+
+
+    @foreach(IssueModel issue in Issues)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@issue.Name</h5>
+                <p class="card-text">@issue.Description</p>
+                <a href="@($"/Projects/{Project.Id}/Issues/{issue.Id}")" class="btn btn-primary">View</a>
+            </div>
+        </div>
+    }
 
 }

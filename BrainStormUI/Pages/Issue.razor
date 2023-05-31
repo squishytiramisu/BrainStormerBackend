@@ -1,0 +1,54 @@
+﻿@page "/Projects/{ProjectId:int}/Issues/{IssueId:int}"
+@inherits IssueBase
+
+@code{
+
+    String NewBrainStormName { get; set; }
+
+
+
+    public async Task NewBrainStormPressed()
+    {
+        return;
+    }
+}
+
+
+@if (
+    @Issue == null || @BrainStorms == null)
+{
+    <h3>Loading...</h3>
+}
+else
+{
+    <h2>@Issue.Name</h2>
+    <h4>@Issue.Description</h4>
+
+    <br/>
+
+    <h3>Brainstorm</h3>
+
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Add a Brainstorm</h5>
+            <input type="text" class="form-control" placeholder="Idea" @bind="NewBrainStormName" />
+            <br />
+            <input type="button" class="btn btn-primary" value="Add" @onclick="async () => await NewBrainStormPressed()" />
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+
+
+    @foreach(BrainStormModel brainStorm in BrainStorms)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@brainStorm.Name</h5>
+            </div>
+        </div>
+    }
+
+}

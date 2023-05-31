@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrainStormerBackend", "Brai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrainStormUI", "BrainStormUI\BrainStormUI.csproj", "{775C051C-7698-4AC5-A6F0-031089244266}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{62F79F6F-9877-46E0-9077-2FCB1DBF8907}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{62F79F6F-9877-46E0-9077-2FCB1DBF8907}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

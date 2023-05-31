@@ -1,7 +1,7 @@
-﻿using BrainStormerBackend.Data;
+﻿using System.Diagnostics;
+using BrainStormerBackend.Data;
 using BrainStormerBackend.Models.Entities;
 using BrainStormerBackend.Models.Requests;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,18 +13,22 @@ namespace BrainStormerBackend.Controllers
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
-        public BrainStormController(BrainStormerDBContext brainStormerDBContext)
+        public BrainStormController(BrainStormerDBContext brainStormerDbContext)
         {
-            this._brainStormerDBContext = brainStormerDBContext;
+            this._brainStormerDBContext = brainStormerDbContext;
         }
 
 
 
         [HttpGet]
-        [Route("GetAllBrainStormsByProjectId/{id:int}")]
-        public async Task<IActionResult> GetAllBrainStormsByProjectId(int id)
+        [Route("GetAllBrainStormsByIssueId/{id:int}")]
+        public async Task<IActionResult> GetAllBrainStormsByIssueId(int id)
         {
             var brainstorms = await _brainStormerDBContext.BrainStorms.Where(x => x.IssueId== id).ToListAsync();
+            if (brainstorms == null)
+            {
+                return NotFound();
+            }
             return Ok(brainstorms);
         }
 
@@ -33,6 +37,10 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> GetBrainStormById(int id)
         {
             var brainstorm = await _brainStormerDBContext.BrainStorms.FirstOrDefaultAsync(x => x.Id == id);
+            if (brainstorm == null)
+            {
+                return NotFound();
+            }
             return Ok(brainstorm);
         }
 
@@ -41,7 +49,12 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> SetToChosen(int id)
         {
             var brainstorm = await _brainStormerDBContext.BrainStorms.FirstOrDefaultAsync(x => x.Id == id);
-            brainstorm.IsChosen = true;
+            if (brainstorm == null)
+            {
+                NotFound();
+            }
+
+            brainstorm!.IsChosen = true;
             await _brainStormerDBContext.SaveChangesAsync();
             return Ok(brainstorm);
         }
@@ -56,6 +69,8 @@ namespace BrainStormerBackend.Controllers
             {
                 IssueId = newBrainstormRequest.IssueId,
                Name = newBrainstormRequest.Name,
+                IsChosen = false,
+                Visibility = true,
             };
             await _brainStormerDBContext.BrainStorms.AddAsync(brainstorm);
             await _brainStormerDBContext.SaveChangesAsync();
@@ -68,7 +83,11 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> HideBrainStorm(int id)
         {
             var brainstorm = await _brainStormerDBContext.BrainStorms.FirstOrDefaultAsync(x => x.Id == id);
-            brainstorm.Visibility = false;
+            if (brainstorm == null)
+            {
+                NotFound();
+            }
+            brainstorm!.Visibility = false;
             await _brainStormerDBContext.SaveChangesAsync();
             return Ok(brainstorm);
         }

@@ -1,17 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BrainStormerBackend.Data;
 using BrainStormerBackend.Models.Entities;
 using BrainStormerBackend.Models.Requests;
-using Microsoft.Identity.Client;
 
 namespace BrainStormerBackend.Controllers
 {
@@ -21,9 +16,9 @@ namespace BrainStormerBackend.Controllers
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
-        public IssueController(BrainStormerDBContext brainStormerDBContext)
+        public IssueController(BrainStormerDBContext brainStormerDbContext)
         {
-            this._brainStormerDBContext = brainStormerDBContext;
+            this._brainStormerDBContext = brainStormerDbContext;
         }
 
 
@@ -32,6 +27,10 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> GetAllIssuesByProjectId(int id)
         {
             var issues = await _brainStormerDBContext.Issues.Where(x => x.ProjectId == id).ToListAsync();
+            if (issues==null)
+            {
+                NotFound();
+            }
             return Ok(issues);
         }
 
@@ -42,6 +41,10 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> GetIssueById(int id)
         {
             var issue = await _brainStormerDBContext.Issues.FirstOrDefaultAsync(x => x.Id == id);
+            if (issue == null)
+            {
+                return NotFound();
+            }
             return Ok(issue);
         }
 
@@ -67,6 +70,10 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var issue = await _brainStormerDBContext.Issues.FirstOrDefaultAsync(x => x.Id == id);
+            if (issue == null)
+            {
+                return NotFound();
+            }
             _brainStormerDBContext.Issues.Remove(issue);
             await _brainStormerDBContext.SaveChangesAsync();
             return Ok();

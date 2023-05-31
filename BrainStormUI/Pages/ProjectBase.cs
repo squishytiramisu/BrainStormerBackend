@@ -7,13 +7,13 @@ namespace BrainStormUI.Pages
     public class ProjectBase: ComponentBase
     {
         [Inject]
-        public IProjectService ProjectService { get; set; }
+        public IBrainStormerService BrainStormerService { get; set; }
 
         public IEnumerable<ProjectModel> Projects { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            Projects = await ProjectService.GetProjects();
+            Projects = await BrainStormerService.GetProjects();
         }
     }
 }

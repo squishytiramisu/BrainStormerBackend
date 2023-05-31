@@ -10,17 +10,18 @@ namespace BrainStormerBackend.Controllers
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
-        public ActionStepController(BrainStormerDBContext brainStormerDBContext)
+        public ActionStepController(BrainStormerDBContext brainStormerDbContext)
         {
-            this._brainStormerDBContext = brainStormerDBContext;
+            this._brainStormerDBContext = brainStormerDbContext;
         }
 
 
         [HttpGet]
-        [Route("GetAllActionStepsIssueById/{id:int}")]
-        public async Task<IActionResult> GetAllActionStepsByIssueId(int id)
+        [Route("GetAllActionStepsBrainStormById/{id:int}")]
+        public async Task<IActionResult> GetAllActionStepsByBrainStormId(int id)
         {
-            var actionSteps = await _brainStormerDBContext.ActionSteps.Where(x => x.IssueId == id).ToListAsync();
+            var actionSteps = await _brainStormerDBContext.ActionSteps.Where(x => x.BrainStormId == id).ToListAsync();
+
             return Ok(actionSteps);
 
         }
@@ -30,6 +31,10 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> GetActionStepById(int id)
         {
             var actionStep = await _brainStormerDBContext.ActionSteps.FirstOrDefaultAsync(x => x.Id == id);
+            if (actionStep == null)
+            {
+                return NotFound();
+            }
             return Ok(actionStep);
         }
 
@@ -39,7 +44,7 @@ namespace BrainStormerBackend.Controllers
         {
             var actionStep = new ActionStep
             {
-                IssueId = newActionStepRequest.BrainStormId,
+                BrainStormId = newActionStepRequest.BrainStormId,
                 Description = newActionStepRequest.Description,
             };
             await _brainStormerDBContext.ActionSteps.AddAsync(actionStep);
@@ -52,6 +57,10 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> DeleteActionStepById(int id)
         {
             var actionStep = await _brainStormerDBContext.ActionSteps.FirstOrDefaultAsync(x => x.Id == id);
+            if (actionStep == null)
+            {
+                return NotFound();
+            }
             _brainStormerDBContext.ActionSteps.Remove(actionStep);
             await _brainStormerDBContext.SaveChangesAsync();
             return Ok();

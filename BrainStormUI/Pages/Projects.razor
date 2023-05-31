@@ -3,6 +3,29 @@
 
 
 @inherits ProjectBase
+
+@code {
+    String NewProjectName { get; set; }
+    String NewProjectDescription { get; set; }
+
+
+
+    public async Task NewProjectPressed()
+    {
+        if(NewProjectName == null || NewProjectName == "")
+        {
+            return;
+        }
+        await BrainStormerService.CreateProject(new ProjectModel { Name = NewProjectName, ProjectDescription = NewProjectDescription });
+        await this.OnInitializedAsync();
+        NewProjectName = "";
+        NewProjectDescription = "";
+    }
+
+
+}
+
+
 <h2>Projects</h2>
 @if(Projects == null)
 {
@@ -10,6 +33,19 @@
 }
 else
 {
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Create New Project</h5>
+            <p class="card-text">Create a new project to organize your problems.</p>
+            <input type="text" class="form-control" placeholder="Project Name" @bind="NewProjectName" />
+            <br />
+            <textarea class="form-control" placeholder="Project Description" @bind="NewProjectDescription"></textarea>
+            <br />
+            <input type="button" class="btn btn-primary" value="Create" @onclick="async () => await NewProjectPressed()" />
+        </div>
+    </div>
+
     var projects = Projects;
     @if (projects.Count() > 0)
     {
@@ -30,6 +66,3 @@ else
 }
 
 
-@code {
-
-}

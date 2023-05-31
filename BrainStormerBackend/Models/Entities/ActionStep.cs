@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Description { get; set; }
-        public int IssueId { get; set; }
-        public Issue Issue { get; set; }
+        public int BrainStormId { get; set; }
+        public BrainStorm BrainStorm{ get; set; }
     }
 }
