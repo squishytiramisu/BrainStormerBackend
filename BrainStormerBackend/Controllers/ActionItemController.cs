@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BrainStormerBackend.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class ActionStepController : Controller
     {
 

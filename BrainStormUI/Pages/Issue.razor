@@ -89,6 +89,7 @@ else
                 <InputBase type="button" class="btn btn-primary" @onclick="async () => {await BrainStormerService.HideBrainStorm(brainStorm.Id); await this.OnInitializedAsync();}">Hide</InputBase>
                 <input type="button" class="btn btn-primary" @onclick="async () => { await BrainStormerService.SetToChosen(brainStorm.Id); await this.OnInitializedAsync();}" value="@mark" />
                 <input type="button" class="btn btn-primary" @onclick="async () => { await EditMode(brainStorm);}" value="Edit" />
+                <a href="@($"/Projects/{ProjectId}/Issues/{IssueId}/BrainStorms/{brainStorm.Id}")" class="btn btn-primary">Go to BrainStorm</a>
             </div>
         </div>
     }

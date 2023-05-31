@@ -1,0 +1,46 @@
+﻿using BrainStormUI.Services.Interfaces;
+using Microsoft.AspNetCore.Components;
+using Shared.Models;
+
+namespace BrainStormUI.Pages
+{
+    public class ActionStepsBase : ComponentBase
+    {
+        [Parameter]
+        public int BrainStormId { get; set; }
+
+        [Parameter]
+        public int IssueId { get; set; }
+
+        [Parameter]
+        public int ProjectId { get; set; }
+
+
+        [Inject]
+        public IBrainStormerService BrainStormerService { get; set; }
+
+
+        public String ProblemName { get; set; }
+
+        public IEnumerable<ActionStepModel> ActionStepsList { get; set; }
+
+        public IssueModel Issue { get; set; }
+
+        public BrainStormModel BrainStorm { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                Issue = await BrainStormerService.GetIssue(IssueId);
+                BrainStorm = await BrainStormerService.GetBrainStorm(BrainStormId);
+                ActionStepsList = await BrainStormerService.GetActionItemsByBrainStormId(BrainStormId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                ProblemName = "Not found";
+            }
+        }
+    }
+}

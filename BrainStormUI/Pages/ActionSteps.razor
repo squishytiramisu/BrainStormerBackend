@@ -1,0 +1,62 @@
+﻿@page "/Projects/{ProjectId:int}/Issues/{IssueId:int}/BrainStorms/{BrainStormId:int}"
+@inherits ActionStepsBase
+
+@code {
+
+    public string NewActionStep{ get; set; }
+
+
+    public async Task CreateNewActionStep()
+    {
+        if (NewActionStep == null)
+        {
+            return;
+        }
+        await BrainStormerService.CreateActionItem(new ActionStepModel { Description = NewActionStep, BrainStormId = BrainStorm.Id });
+        await this.OnInitializedAsync();
+        NewActionStep = "";
+    }
+
+
+}
+
+
+@if (@ActionStepsList == null)
+{
+    <h3>Loading...</h3>
+}
+else
+{
+    <h2>Steps to solve issue</h2>
+    <h4>Main Idea: @BrainStorm.Name</h4>
+
+    <br />
+
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Add new Step</h5>
+            <input type="text" class="form-control" placeholder="Idea" @bind="NewActionStep" />
+            <br />
+            <input type="button" class="btn btn-primary" value="Save" @onclick="async () => await CreateNewActionStep()" />
+
+
+
+        </div>
+    </div>
+
+    <br />
+    <br />
+
+    <ol class="list-group list-group-numbered">
+
+    @foreach (ActionStepModel actionStep in ActionStepsList)
+    {
+        <li class="list-group-item">@actionStep.Description</li>
+    }
+        </ol>
+
+
+
+
+}
