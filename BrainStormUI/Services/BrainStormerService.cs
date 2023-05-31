@@ -146,6 +146,12 @@ namespace BrainStormUI.Services
             return respone.Content.ReadFromJsonAsync<BrainStormModel>().Result;
         }
 
+        public async Task<BrainStormModel> EditBrainStorm(int id, BrainStormModel brainStorm)
+        {
+            var response = await client.PutAsJsonAsync($"api/BrainStorm/EditBrainStorm/{id}", brainStorm);
+            return response.Content.ReadFromJsonAsync<BrainStormModel>().Result;
+        }
+
         public async Task<IEnumerable<ActionStepModel>> GetActionItemsByBrainStormId(int issueId)
         {
             var actionItems =

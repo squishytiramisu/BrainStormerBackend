@@ -26,13 +26,13 @@ namespace BrainStormUI.Services.Interfaces
         Task<BrainStormModel> CreateBrainStorm(BrainStormModel brainStorm);
         Task<BrainStormModel> SetToChosen(int id);
         Task<BrainStormModel> HideBrainStorm(int id);
+        Task<BrainStormModel> EditBrainStorm(int id, BrainStormModel brainStorm);
 
         //ActionItem CRUD
         Task<IEnumerable<ActionStepModel>> GetActionItemsByBrainStormId(int issueId);
         Task<ActionStepModel> GetActionItem(int id);
         Task<ActionStepModel> CreateActionItem(ActionStepModel actionItem);
         Task<ActionStepModel> DeleteActionItem(int id);
-
 
 
 

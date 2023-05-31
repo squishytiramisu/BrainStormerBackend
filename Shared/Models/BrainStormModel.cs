@@ -12,6 +12,6 @@ namespace Shared.Models
         public int IssueId { get; set; }
         public string Name { get; set; }
         public bool IsChosen { get; set; }
-        public bool IsHidden { get; set; }
+        public bool Visibility { get; set; }
     }
 }

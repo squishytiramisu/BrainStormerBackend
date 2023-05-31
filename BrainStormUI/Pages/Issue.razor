@@ -3,14 +3,43 @@
 
 @code{
 
-    String NewBrainStormName { get; set; }
+    string NewBrainStormName { get; set; }
 
+    bool isEditMode = false;
+    public BrainStormModel? editBrainStorm;
 
 
     public async Task NewBrainStormPressed()
     {
-        return;
+    if (NewBrainStormName == null )
+        {
+            return;
+        }
+        await BrainStormerService.CreateBrainStorm(new BrainStormModel { Name = NewBrainStormName, IssueId = Issue.Id });
+        await this.OnInitializedAsync();
+        NewBrainStormName = "";
     }
+
+    public async Task EditMode(BrainStormModel brainStorm)
+    {
+        editBrainStorm = brainStorm;
+        isEditMode = true;
+        NewBrainStormName = brainStorm.Name;
+        await this.OnInitializedAsync();
+    }
+
+    public async Task EditSave()
+    {
+        if (editBrainStorm != null)
+        {
+            editBrainStorm.Name = NewBrainStormName;
+            await this.BrainStormerService.EditBrainStorm(editBrainStorm.Id, editBrainStorm);
+        isEditMode=false;
+            NewBrainStormName = "";
+            await this.OnInitializedAsync();
+        }
+    }
+
 }
 
 
@@ -28,13 +57,21 @@ else
 
     <h3>Brainstorm</h3>
 
-
+    var editMode = isEditMode ? "Edit Mode" : "Add a Brainstorm";
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Add a Brainstorm</h5>
+            <h5 class="card-title">@editMode</h5>
             <input type="text" class="form-control" placeholder="Idea" @bind="NewBrainStormName" />
             <br />
-            <input type="button" class="btn btn-primary" value="Add" @onclick="async () => await NewBrainStormPressed()" />
+            @if (isEditMode==false)
+            {
+                <input type="button" class="btn btn-primary" value="Save" @onclick="async () => await NewBrainStormPressed()" />
+            }
+            else
+            {
+                <input type="button" class="btn btn-primary" value="Save changes" @onclick="async () =>await EditSave()" />
+            }
+            
         </div>
     </div>
 
@@ -42,13 +79,21 @@ else
     <br/>
 
 
-    @foreach(BrainStormModel brainStorm in BrainStorms)
+    @foreach (BrainStormModel brainStorm in BrainStorms.Where((model => model.Visibility == true)))
     {
-        <div class="card">
+        var color = brainStorm.IsChosen ? "text-white bg-success mb-3" : "";
+        var mark = brainStorm.IsChosen ? "Remove mark" : "Marked as good";
+        <div class="card @color">
             <div class="card-body">
                 <h5 class="card-title">@brainStorm.Name</h5>
+                <InputBase type="button" class="btn btn-primary" @onclick="async () => {await BrainStormerService.HideBrainStorm(brainStorm.Id); await this.OnInitializedAsync();}">Hide</InputBase>
+                <input type="button" class="btn btn-primary" @onclick="async () => { await BrainStormerService.SetToChosen(brainStorm.Id); await this.OnInitializedAsync();}" value="@mark" />
+                <input type="button" class="btn btn-primary" @onclick="async () => { await EditMode(brainStorm);}" value="Edit" />
             </div>
         </div>
     }
+
+
+
 
 }

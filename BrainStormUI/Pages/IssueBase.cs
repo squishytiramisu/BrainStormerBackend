@@ -27,11 +27,12 @@ namespace BrainStormUI.Pages
         {
             try
             {
-                Issue = await BrainStormerService.GetIssue(ProjectId);
+                Issue = await BrainStormerService.GetIssue(IssueId);
                 BrainStorms = await BrainStormerService.GetBrainStormsByIssueId(IssueId);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.ToString());
                 ProblemName = "Issue not found";
             }
         }
