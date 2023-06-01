@@ -29,15 +29,19 @@ String NewIssueDescription { get; set; }
 }
 else
 {
-    <h2>@Project.Name</h2>
+    <h1 class="display-3">
+        Project:
+        <small class="text-muted"> @Project.Name</small>
+    </h1>
     <h4>@Project.ProjectDescription</h4>
 
     <br/>
+    <br/>
 
-    <h3>Problems</h3>
+    <h3 class="display-5">Problems</h3>
 
 
-    <div class="card">
+    <div class="card text-white bg-primary mb-3">
         <div class="card-body">
             <h5 class="card-title">Create a New Issue to Solve</h5>
             <input type="text" class="form-control" placeholder="Issue Name" @bind="NewIssueName" />
@@ -54,8 +58,8 @@ else
 
     @foreach(IssueModel issue in Issues)
     {
-        <div class="card">
-            <div class="card-body">
+        <div class="card border-primary mb-3">
+            <div class="card-body text-primary">
                 <h5 class="card-title">@issue.Name</h5>
                 <p class="card-text">@issue.Description</p>
                 <a href="@($"/Projects/{Project.Id}/Issues/{issue.Id}")" class="btn btn-primary">View</a>
