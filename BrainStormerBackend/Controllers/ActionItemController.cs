@@ -1,6 +1,7 @@
 ﻿using BrainStormerBackend.Data;
 using BrainStormerBackend.Models.Entities;
 using BrainStormerBackend.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace BrainStormerBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ActionStepController : Controller
     {
 
