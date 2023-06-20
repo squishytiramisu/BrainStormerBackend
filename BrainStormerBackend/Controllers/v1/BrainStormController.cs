@@ -5,9 +5,9 @@ using BrainStormerBackend.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace BrainStormerBackend.Controllers
+namespace BrainStormerBackend.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class BrainStormController : Controller
     {
@@ -15,7 +15,7 @@ namespace BrainStormerBackend.Controllers
         private readonly BrainStormerDBContext _brainStormerDBContext;
         public BrainStormController(BrainStormerDBContext brainStormerDbContext)
         {
-            this._brainStormerDBContext = brainStormerDbContext;
+            _brainStormerDBContext = brainStormerDbContext;
         }
 
 
@@ -24,7 +24,7 @@ namespace BrainStormerBackend.Controllers
         [Route("GetAllBrainStormsByIssueId/{id:int}")]
         public async Task<IActionResult> GetAllBrainStormsByIssueId(int id)
         {
-            var brainstorms = await _brainStormerDBContext.BrainStorms.Where(x => x.IssueId== id).ToListAsync();
+            var brainstorms = await _brainStormerDBContext.BrainStorms.Where(x => x.IssueId == id).ToListAsync();
             Console.WriteLine(brainstorms.Count);
             if (brainstorms == null)
             {

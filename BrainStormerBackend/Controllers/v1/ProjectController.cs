@@ -4,23 +4,23 @@ using BrainStormerBackend.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace BrainStormerBackend.Controllers
+namespace BrainStormerBackend.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class ProjectController : Controller
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
         public ProjectController(BrainStormerDBContext brainStormerDbContext)
         {
-            this._brainStormerDBContext = brainStormerDbContext;
+            _brainStormerDBContext = brainStormerDbContext;
         }
 
 
         [HttpGet]
         [Route("getAllProject")]
-        public async Task<IActionResult>GetAllProject()
+        public async Task<IActionResult> GetAllProject()
         {
             var projects = await _brainStormerDBContext.Projects.ToListAsync();
 
@@ -34,8 +34,8 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> GetProjectById(int id)
         {
             var project = await _brainStormerDBContext.Projects.FirstOrDefaultAsync(x => x.Id == id);
-            
-            if(project == null)
+
+            if (project == null)
             {
                 return NotFound();
             }
@@ -54,7 +54,7 @@ namespace BrainStormerBackend.Controllers
             };
             await _brainStormerDBContext.Projects.AddAsync(project);
             await _brainStormerDBContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetProjectById),new { id = project.Id}, project);
+            return CreatedAtAction(nameof(GetProjectById), new { id = project.Id }, project);
         }
 
         [HttpDelete]
@@ -62,7 +62,7 @@ namespace BrainStormerBackend.Controllers
         public async Task<IActionResult> DeleteProject(int id)
         {
             var project = await _brainStormerDBContext.Projects.FirstOrDefaultAsync(x => x.Id == id);
-            if(project == null)
+            if (project == null)
             {
                 return NotFound();
             }

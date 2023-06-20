@@ -5,11 +5,11 @@ using BrainStormerBackend.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BrainStormerBackend.Controllers
+namespace BrainStormerBackend.Controllers.v2
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v2/[controller]")]
     public class IdentityController : Controller
     {
 

@@ -8,10 +8,10 @@ using BrainStormerBackend.Data;
 using BrainStormerBackend.Models.Entities;
 using BrainStormerBackend.Models.Requests;
 
-namespace BrainStormerBackend.Controllers
+namespace BrainStormerBackend.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class IssueController : Controller
     {
 

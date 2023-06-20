@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace BrainStormerBackend.Controllers
+namespace BrainStormerBackend.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize]
     public class ActionStepController : Controller
@@ -16,7 +16,7 @@ namespace BrainStormerBackend.Controllers
         private readonly BrainStormerDBContext _brainStormerDBContext;
         public ActionStepController(BrainStormerDBContext brainStormerDbContext)
         {
-            this._brainStormerDBContext = brainStormerDbContext;
+            _brainStormerDBContext = brainStormerDbContext;
         }
 
 
