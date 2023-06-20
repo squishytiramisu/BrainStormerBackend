@@ -9,7 +9,6 @@ namespace BrainStormerBackend.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    [Authorize]
     public class ProjectController : Controller
     {
 

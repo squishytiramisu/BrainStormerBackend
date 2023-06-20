@@ -11,4 +11,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7125/") });
 builder.Services.AddScoped<IBrainStormerService, BrainStormerService>();
 
+
+
 await builder.Build().RunAsync();

@@ -1,5 +1,10 @@
 ﻿@page "/Projects/{ProjectId:int}/Issues/{IssueId:int}/BrainStorms/{BrainStormId:int}"
 @inherits ActionStepsBase
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Net.Http.Headers
 
 @code {
 
@@ -13,17 +18,71 @@
             return;
         }
         await BrainStormerService.CreateActionItem(new ActionStepModel { Description = NewActionStep, BrainStormId = BrainStorm.Id });
-        await this.OnInitializedAsync();
+        await Send(NewActionStep,BrainStormId);
+
         NewActionStep = "";
+
+
+        await this.OnInitializedAsync();
     }
 
+    private HubConnection? hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Issue = await BrainStormerService.GetIssue(IssueId);
+            BrainStorm = await BrainStormerService.GetBrainStorm(BrainStormId);
+            ActionStepsList = await BrainStormerService.GetActionItemsByBrainStormId(BrainStormId) as List<ActionStepModel>;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.ToString());
+            ProblemName = "Not found";
+        }
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7125/actionstephub")
+            .Build();
+        Console.WriteLine("DONE");
+        hubConnection.On<string,int>("GetActionStep", (step,id) =>
+        {
+            if(id==BrainStormId)
+            {
+                ActionStepsList.Add(new ActionStepModel { Description = step });
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async Task Send(string newStep,int brainStormId)
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendActionStep", newStep,brainStormId);
+        }
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
 
 }
-
 
 @if (@ActionStepsList == null)
 {
     <h3>Loading...</h3>
+
 }
 else
 {

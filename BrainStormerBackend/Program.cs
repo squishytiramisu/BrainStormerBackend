@@ -1,10 +1,13 @@
 using System.Security.Claims;
 using System.Text;
 using BrainStormerBackend.Data;
+using BrainStormerBackend.Hubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,16 +49,25 @@ builder.Services.AddAuthorization(
 //builder.Services.AddDbContext<BrainStormerDBContext>(options => options.UseSqlServer())
 
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-
+app.UseResponseCompression();
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -72,9 +84,11 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+
 app.MapGraphQL((PathString)"/graphql");
 
 app.MapControllers();
-
+app.MapHub<ActionStepHub>("actionstephub").AllowAnonymous();
 
 app.Run();
