@@ -1,4 +1,6 @@
 ﻿using BrainStormerBackend.Models.Entities;
+using HotChocolate.Authorization;
+
 
 namespace BrainStormerBackend.Data
 {
@@ -7,6 +9,7 @@ namespace BrainStormerBackend.Data
         [UseProjection]
         [UseFiltering]
         [UseSorting]
+        [Authorize]
         public IQueryable<Project> GetProjects([Service] BrainStormerDBContext context) =>
             context.Projects;
     }

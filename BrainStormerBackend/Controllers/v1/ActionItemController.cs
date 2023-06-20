@@ -9,7 +9,6 @@ namespace BrainStormerBackend.Controllers.v1
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
     public class ActionStepController : Controller
     {
 

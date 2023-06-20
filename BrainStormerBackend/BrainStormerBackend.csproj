@@ -5,12 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>3ce3f8cd-fba4-46d5-bb78-31dd56b84a77</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="7.4.0" />
     <PackageReference Include="hotchocolate.aspnetcore" Version="13.2.1" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.2.1" />
     <PackageReference Include="HotChocolate.Data" Version="13.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />

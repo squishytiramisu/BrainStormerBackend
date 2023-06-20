@@ -12,11 +12,11 @@ namespace BrainStormerBackend.Controllers
 {
     [ApiController]
     [Route("api/v2/[controller]")]
-    public class IssueController : Controller
+    public class IssueHATEOSController : Controller
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
-        public IssueController(BrainStormerDBContext brainStormerDbContext)
+        public IssueHATEOSController(BrainStormerDBContext brainStormerDbContext)
         {
             this._brainStormerDBContext = brainStormerDbContext;
         }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using BrainStormerBackend.Data;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var ValidAudience = builder.Configuration.GetSection("JwtSettings:Audience").Value;
-var ValidIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value;
-var IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings:Secret").Value));
+
+builder.Services.AddDbContext<BrainStormerDBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 //No authorization
 builder.Services.AddAuthentication(x =>
@@ -23,41 +25,46 @@ builder.Services.AddAuthentication(x =>
 {
     x.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings:Secret").Value)),
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudience = builder.Configuration.GetSection("JwtSettings:Audience").Value,
-            ValidIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings:Secret").Value))
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateIssuerSigningKey = true
         };
     }
     );
-builder.Services.AddAuthorization();
-    builder.Services.AddDbContext<BrainStormerDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddGraphQLServer().AddAuthorization().AddQueryType<Query>().AddProjections().AddFiltering().AddSorting();
+
+builder.Services.AddAuthorization(
+    options =>
+    {
+        options.AddPolicy("User", policy => policy.RequireClaim(ClaimTypes.Role, "User"));
+    }
+    );
+
+//builder.Services.AddDbContext<BrainStormerDBContext>(options => options.UseSqlServer())
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddGraphQLServer().AddQueryType<Query>().AddProjections().AddFiltering().AddSorting();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (builder.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 
 app.UseCors(policyName =>
 policyName.AllowAnyOrigin()
-        .AllowAnyHeader()
-               .AllowAnyMethod());
+    .AllowAnyHeader()
+           .AllowAnyMethod());
 
 app.UseHttpsRedirection();
 
@@ -65,8 +72,9 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGraphQL((PathString)"/graphql");
+
 app.MapControllers();
 
-app.MapGraphQL((PathString)"/graphql");
 
 app.Run();

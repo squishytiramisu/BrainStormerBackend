@@ -9,12 +9,11 @@ namespace BrainStormerBackend.Controllers.v2
 {
     [Route("api/v2/[controller]")]
     [ApiController]
-    [Authorize]
-    public class ActionStepController : Controller
+    public class ActionItemHATEOSController : Controller
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
-        public ActionStepController(BrainStormerDBContext brainStormerDbContext)
+        public ActionItemHATEOSController(BrainStormerDBContext brainStormerDbContext)
         {
             _brainStormerDBContext = brainStormerDbContext;
         }
