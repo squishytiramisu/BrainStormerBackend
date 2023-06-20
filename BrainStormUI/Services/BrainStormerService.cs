@@ -2,6 +2,7 @@
 using BrainStormUI.Services.Interfaces;
 using Shared.Models;
 using System.Net.Http.Json;
+using BrainStormerBackend.Models.Requests;
 
 namespace BrainStormUI.Services
 {
@@ -12,6 +13,24 @@ namespace BrainStormUI.Services
         public BrainStormerService(HttpClient client)
         {
             this.client = client;
+        }
+
+
+        public async Task<RootResponse> JudgeBrainStorm()
+        {
+            try
+            {
+                var response = await client.PostAsJsonAsync<JudgeRequest>("api/v2/GPT/JudgeIdea", new JudgeRequest
+                {
+                    BrainStormName = "Intense Excercise",IssueName = "Feeling Sick",ProjectName = "Recovering",IssueDescription = ""
+                });
+                return await response.Content.ReadFromJsonAsync<RootResponse>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<ProjectModel> CreateProject(ProjectModel project)

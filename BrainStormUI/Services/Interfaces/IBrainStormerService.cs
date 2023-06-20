@@ -34,7 +34,7 @@ namespace BrainStormUI.Services.Interfaces
         Task<ActionStepModel> CreateActionItem(ActionStepModel actionItem);
         Task<ActionStepModel> DeleteActionItem(int id);
 
-
+        Task<RootResponse> JudgeBrainStorm();
 
     }
 }
