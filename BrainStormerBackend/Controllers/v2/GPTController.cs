@@ -17,7 +17,7 @@ namespace BrainStormerBackend.Controllers.v2
         {
             client = new HttpClient();
             client.BaseAddress = new Uri("https://api.openai.com/v1/chat/");
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + "sk-");
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + "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");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 

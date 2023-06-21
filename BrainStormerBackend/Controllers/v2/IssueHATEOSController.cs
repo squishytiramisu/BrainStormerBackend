@@ -26,8 +26,8 @@ namespace BrainStormerBackend.Controllers
 
         }
 
-
-        [HttpGet("{id}",Name = nameof(GetAllIssuesByProjectId))]
+        [ActionName(nameof(GetAllIssuesByProjectId))]
+        [HttpGet("byProjectId/{id}",Name = nameof(GetAllIssuesByProjectId))]
         public async Task<IActionResult> GetAllIssuesByProjectId(int id)
         {
             var issues = await _brainStormerDBContext.Issues.Where(x => x.ProjectId == id).ToListAsync();
@@ -46,7 +46,7 @@ namespace BrainStormerBackend.Controllers
             }).ToList();
             var linkedIssuesDtos = issueDtos.Select(CreateLinksForIssue);
             var wrapper = new LinkedCollectionBaseDto<IssueDto>(linkedIssuesDtos);
-            return Ok(CreateLinksForIssues(wrapper));
+            return Ok(CreateLinksForIssues(wrapper, id));
 
         }
 
@@ -101,13 +101,13 @@ namespace BrainStormerBackend.Controllers
             var idObj = new { id = issue.Id };
             issue.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(GetIssueById), idObj), "self", "GET"));
             issue.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(Delete), idObj), "delete_issue", "DELETE"));
-            issue.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(CreateNewIssue), idObj), "create_issue", "POST"));
-            return issue;
+            issue.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(CreateNewIssue), new{}), "create_issue", "POST"));
+        return issue;
         }
 
-        private LinkedCollectionBaseDto<IssueDto> CreateLinksForIssues(LinkedCollectionBaseDto<IssueDto> issuesWrapper)
+        private LinkedCollectionBaseDto<IssueDto> CreateLinksForIssues(LinkedCollectionBaseDto<IssueDto> issuesWrapper,int projectId)
         {
-            issuesWrapper.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(GetAllIssuesByProjectId),new {}), "self", "GET"));
+            issuesWrapper.Links.Add(new LinkDto("/api/v2/IssueHATEOS/byProject/"+projectId.ToString(), "self", "GET"));
             return issuesWrapper;
         }
 
