@@ -21,9 +21,7 @@
         await Send(NewActionStep,BrainStormId);
 
         NewActionStep = "";
-
-
-        await this.OnInitializedAsync();
+        StateHasChanged();
     }
 
     private HubConnection? hubConnection;
@@ -43,9 +41,8 @@
         }
 
         hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7125/actionstephub")
+            .WithUrl("https://dotnethf1.azurewebsites.net/actionstephub")
             .Build();
-        Console.WriteLine("DONE");
         hubConnection.On<string,int>("GetActionStep", (step,id) =>
         {
             if(id==BrainStormId)

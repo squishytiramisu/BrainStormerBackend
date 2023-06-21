@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7125/") });
-builder.Services.AddScoped(sp => new GraphQLHttpClient("https://localhost:7125/graphql", new NewtonsoftJsonSerializer()));
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://dotnethf1.azurewebsites.net/") });
+builder.Services.AddScoped(sp => new GraphQLHttpClient("https://dotnethf1.azurewebsites.net/graphql", new NewtonsoftJsonSerializer()));
 
 
 
