@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
 using BrainStormerBackend.Data;
@@ -6,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.ResponseCompression;
 
 
@@ -16,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BrainStormerDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 
 //No authorization
@@ -55,6 +60,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//LinkGenerator
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddRouting();
+
+
 
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(opts =>
@@ -62,6 +72,7 @@ builder.Services.AddResponseCompression(opts =>
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
         new[] { "application/octet-stream" });
 });
+
 
 
 var app = builder.Build();

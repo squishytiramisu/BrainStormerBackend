@@ -11,11 +11,13 @@ namespace BrainStormerBackend.Controllers.v2
     [ApiController]
     public class ActionItemHATEOSController : Controller
     {
+        private readonly LinkGenerator _linkGenerator;
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
-        public ActionItemHATEOSController(BrainStormerDBContext brainStormerDbContext)
+        public ActionItemHATEOSController(BrainStormerDBContext brainStormerDbContext, LinkGenerator linkGenerator)
         {
             _brainStormerDBContext = brainStormerDbContext;
+            this._linkGenerator = linkGenerator;
         }
 
 
