@@ -3,6 +3,8 @@ using BrainStormUI.Services.Interfaces;
 using Shared.Models;
 using System.Net.Http.Json;
 using BrainStormerBackend.Models.Requests;
+using GraphQL;
+using GraphQL.Client.Http;
 
 namespace BrainStormUI.Services
 {
@@ -10,19 +12,46 @@ namespace BrainStormUI.Services
     {
         private readonly HttpClient client;
 
-        public BrainStormerService(HttpClient client)
+        private readonly GraphQLHttpClient graphQLClient;
+
+        public BrainStormerService(HttpClient client, GraphQLHttpClient graphQlClient)
         {
+            this.graphQLClient = graphQlClient;
             this.client = client;
+
+            
         }
 
 
-        public async Task<RootResponse> JudgeBrainStorm()
+        public async Task<RootResponse> JudgeBrainStorm(int brainStormId, string token)
         {
+
             try
             {
+                graphQLClient.HttpClient.DefaultRequestHeaders.Remove("Authorization");
+                graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+                var data = await this.graphQLClient.SendQueryAsync<GraphQLBrainStormResponse>(new GraphQLRequest
+                {
+                    Query = @"query BrainStorms($id : Int) {
+                                brainStorms(where: {id: {eq: $id}}) {
+                                    name
+                                    issue {
+                                        name
+                                        project {
+                                            name
+                                        }
+                                    }
+                                }
+                            }
+
+                    ",
+                    Variables = new { id = brainStormId }
+                });
+
+                var parsed = data.Data.brainStorms[0];
                 var response = await client.PostAsJsonAsync<JudgeRequest>("api/v2/GPT/JudgeIdea", new JudgeRequest
                 {
-                    BrainStormName = "Intense Excercise",IssueName = "Feeling Sick",ProjectName = "Recovering",IssueDescription = ""
+                    BrainStormName = parsed.name,IssueName = parsed.issue.name,ProjectName = parsed.issue.project.name, IssueDescription = ""
                 });
                 return await response.Content.ReadFromJsonAsync<RootResponse>();
             }
@@ -31,6 +60,64 @@ namespace BrainStormUI.Services
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        public async Task<string> GenerateBrainStorm(int issueId, string token)
+        {
+            graphQLClient.HttpClient.DefaultRequestHeaders.Remove("Authorization");
+            graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            try
+            {
+                var data = await this.graphQLClient.SendQueryAsync<GrapQLIssueResponse>(new GraphQLRequest
+                {
+                    Query = @"query Issues($id : Int) {
+                                issues(where: {id: {eq: $id}}) {
+                                    name
+                                    project {
+                                        name
+                                    }
+                                }
+                            }
+                            ",
+                    Variables = new { id = issueId }
+                });
+
+                var parsed = data.Data.issues[0];
+                var response = await client.PostAsJsonAsync<GenerateRequest>("api/v2/GPT/GenerateIdea", new GenerateRequest
+                {
+                    IssueName = parsed.name,
+                    ProjectName = parsed.project.name,
+                    IssueDescription = ""
+                });
+                var message= await response.Content.ReadFromJsonAsync<RootResponse>();
+                return message.result.choices[0].message.content;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task<string> Login(string username, string password)
+        {
+            // /api/v1/identity/token
+            try
+            {
+                var response = await client.PostAsJsonAsync<LoginRequest>("api/v1/identity/token", new LoginRequest
+                {
+                    Username = username,
+                    Secret = password
+                });
+                var message = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                return message.token;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
         }
 
         public async Task<ProjectModel> CreateProject(ProjectModel project)

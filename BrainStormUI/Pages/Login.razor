@@ -1,0 +1,64 @@
+﻿
+@page "/login"
+
+
+@inherits LoginBase
+
+@inject IJSRuntime jsr
+@inject NavigationManager NavigationManager
+
+@code {
+
+    public string Username { get; set; } = "";
+    public string Password { get; set; } = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    public async Task LoginRequest()
+    {
+        var token = await this.BrainStormerService.Login(Username, Password);
+
+        if (token != null)
+        {
+            await jsr.InvokeVoidAsync("localStorage.setItem", "token", token);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            Username = "";
+            Password = "";
+        }
+
+        await this.OnInitializedAsync();
+    }
+}
+
+
+
+<h2>Login</h2>
+
+
+
+<br/>
+<div class="card text-white bg-primary mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Login</h5>
+        <input type="text" class="form-control" placeholder="Username" @bind="Username" />
+        <br />
+        <input type="password" class="form-control" placeholder="Secret" @bind="Password"></input>
+        <br />
+        <input type="button" class="btn btn-light" value="Create" @onclick="async () => await LoginRequest()" />
+    </div>
+</div>
+
+<br />
+
+    
+
+
+
+

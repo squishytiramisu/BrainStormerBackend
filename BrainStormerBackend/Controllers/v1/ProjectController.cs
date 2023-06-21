@@ -13,9 +13,12 @@ namespace BrainStormerBackend.Controllers.v1
     {
 
         private readonly BrainStormerDBContext _brainStormerDBContext;
+
+        private ProjectsCache _projectsCache;
         public ProjectController(BrainStormerDBContext brainStormerDbContext)
         {
             _brainStormerDBContext = brainStormerDbContext;
+            _projectsCache = new ProjectsCache(brainStormerDbContext);
         }
 
 
@@ -34,7 +37,7 @@ namespace BrainStormerBackend.Controllers.v1
         [ActionName("GetProjectById")]
         public async Task<IActionResult> GetProjectById(int id)
         {
-            var project = await _brainStormerDBContext.Projects.FirstOrDefaultAsync(x => x.Id == id);
+            var project = _projectsCache.GetProjectFromCache(id);
 
             if (project == null)
             {

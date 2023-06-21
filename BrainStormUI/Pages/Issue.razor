@@ -1,6 +1,8 @@
 ﻿@page "/Projects/{ProjectId:int}/Issues/{IssueId:int}"
 @inherits IssueBase
 
+@inject IJSRuntime jsr
+
 @code{
 
     string NewBrainStormName { get; set; }
@@ -40,6 +42,33 @@
         }
     }
 
+    public async Task JudgeBrainStorm(int brainStormId,bool isChoosen)
+    {
+        var userToken = await jsr.InvokeAsync<string>("localStorage.getItem", "token").ConfigureAwait(false);
+        
+        var resp = await this.BrainStormerService.JudgeBrainStorm(brainStormId,userToken);
+        if (resp.result.choices[0].message.content.Contains("Yes") && !isChoosen)
+        {
+            await BrainStormerService.SetToChosen(brainStormId);
+            await this.OnInitializedAsync();
+        }
+        else if (!resp.result.choices[0].message.content.Contains("Yes") && isChoosen )
+        {
+            await BrainStormerService.SetToChosen(brainStormId);
+            await this.OnInitializedAsync();
+        }
+        StateHasChanged();
+    }
+
+    public async Task GenerateWithAI()
+    {
+        var userToken = await jsr.InvokeAsync<string>("localStorage.getItem", "token").ConfigureAwait(false);
+        var resp = await this.BrainStormerService.GenerateBrainStorm(IssueId, userToken);
+        await BrainStormerService.CreateBrainStorm(new BrainStormModel { Name = resp, IssueId = Issue.Id });
+        StateHasChanged();
+        await this.OnInitializedAsync();
+
+    }
 }
 
 
@@ -81,6 +110,9 @@ else
         </div>
     </div>
 
+    <input type="button" class="btn btn-primary" value="AI Generate" @onclick="async () =>await GenerateWithAI()" />
+
+
     <br/>
     <br/>
 
@@ -95,7 +127,7 @@ else
                 <InputBase type="button" class="btn btn-danger" @onclick="async () => {await BrainStormerService.HideBrainStorm(brainStorm.Id); await this.OnInitializedAsync();}">Hide</InputBase>
                 <input type="button" class="btn btn-info" @onclick="async () => { await BrainStormerService.SetToChosen(brainStorm.Id); await this.OnInitializedAsync();}" value="@mark" />
                 <input type="button" class="btn btn-warning" @onclick="async () => { await EditMode(brainStorm);}" value="Edit" />
-                <input type="button" class="btn btn-warning" @onclick="async () => { var xd = await this.BrainStormerService.JudgeBrainStorm();Console.WriteLine(xd.result.choices[0].message.content);}" value="JUDGE" />
+                <input type="button" class="btn btn-dark" @onclick="async () => this.JudgeBrainStorm(brainStorm.Id,brainStorm.IsChosen)" value="AI Judge" />
                 <a href="@($"/Projects/{ProjectId}/Issues/{IssueId}/BrainStorms/{brainStorm.Id}")" class="btn btn-primary">Go to BrainStorm</a>
             </div>
         </div>

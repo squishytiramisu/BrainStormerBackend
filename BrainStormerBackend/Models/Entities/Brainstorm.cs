@@ -1,5 +1,6 @@
 ﻿namespace BrainStormerBackend.Models.Entities
 {
+
     public class BrainStorm
     {
         public int Id { get; set; }
