@@ -35,15 +35,15 @@ namespace BrainStormerBackend.Controllers.v1
         [HttpGet]
         [Route("getProjectById/{id:int}")]
         [ActionName("GetProjectById")]
-        public async Task<IActionResult> GetProjectById(int id)
+        public Task<IActionResult> GetProjectById(int id)
         {
             var project = _projectsCache.GetProjectFromCache(id);
 
             if (project == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());
             }
-            return Ok(project);
+            return Task.FromResult<IActionResult>(Ok(project));
         }
 
         [HttpPost]

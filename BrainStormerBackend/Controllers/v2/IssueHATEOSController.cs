@@ -99,9 +99,9 @@ namespace BrainStormerBackend.Controllers
         private IssueDto CreateLinksForIssue(IssueDto issue)
         {
             var idObj = new { id = issue.Id };
-            issue.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(GetIssueById), idObj), "self", "GET"));
-            issue.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(Delete), idObj), "delete_issue", "DELETE"));
-            issue.Links.Add(new LinkDto(_linkGenerator.GetPathByName(nameof(CreateNewIssue), new{}), "create_issue", "POST"));
+            issue.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext,nameof(GetIssueById), values: idObj), "self", "GET"));
+            issue.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext,nameof(Delete), values: idObj), "delete_issue", "DELETE"));
+            issue.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext,nameof(CreateNewIssue), values: new {}), "create_issue", "POST"));
         return issue;
         }
 

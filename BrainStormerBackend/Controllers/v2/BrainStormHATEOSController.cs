@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using BrainStormerBackend.Data;
 using BrainStormerBackend.Models.Entities;
+using BrainStormerBackend.Models.HATEOAS;
 using BrainStormerBackend.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,21 +23,29 @@ namespace BrainStormerBackend.Controllers.v2
 
 
 
-        [HttpGet]
-        [Route("GetAllBrainStormsByIssueId/{id:int}")]
+        [HttpGet("byIssueId/{id}", Name = nameof(GetAllBrainStormsByIssueId))]
         public async Task<IActionResult> GetAllBrainStormsByIssueId(int id)
         {
             var brainstorms = await _brainStormerDBContext.BrainStorms.Where(x => x.IssueId == id).ToListAsync();
-            Console.WriteLine(brainstorms.Count);
             if (brainstorms == null)
             {
                 return NotFound();
             }
-            return Ok(brainstorms);
+            var brainstormDtos = brainstorms.Select(x => new BrainStormDto
+            {
+                Id = x.Id,
+                IssueId = x.IssueId,
+                Name = x.Name,
+                IsChosen = x.IsChosen,
+                Visibility = x.Visibility,
+            }).ToList();
+
+            var linkedBrainStormDtos = brainstormDtos.Select(createLinksForBrainStormDto);
+
+            return Ok(linkedBrainStormDtos);
         }
 
-        [HttpGet]
-        [Route("GetBrainStormById/{id:int}")]
+        [HttpGet("{id}", Name = nameof(GetBrainStormById))]
         public async Task<IActionResult> GetBrainStormById(int id)
         {
             var brainstorm = await _brainStormerDBContext.BrainStorms.FirstOrDefaultAsync(x => x.Id == id);
@@ -47,8 +56,7 @@ namespace BrainStormerBackend.Controllers.v2
             return Ok(brainstorm);
         }
 
-        [HttpPatch]
-        [Route("SetToChosen/{id:int}")]
+        [HttpPatch("{id}", Name = nameof(SetToChosen))]
         public async Task<IActionResult> SetToChosen(int id)
         {
             var brainstorm = await _brainStormerDBContext.BrainStorms.FirstOrDefaultAsync(x => x.Id == id);
@@ -64,8 +72,7 @@ namespace BrainStormerBackend.Controllers.v2
 
 
 
-        [HttpPost]
-        [Route("CreateNewBrainstorm")]
+        [HttpPost(Name = nameof(CreateNewBrainstorm))]
         public async Task<IActionResult> CreateNewBrainstorm([FromBody] CreateBrainStormRequest newBrainstormRequest)
         {
             var brainstorm = new BrainStorm
@@ -81,8 +88,7 @@ namespace BrainStormerBackend.Controllers.v2
 
         }
 
-        [HttpPatch]
-        [Route("HideBrainStorm/{id:int}")]
+        [HttpDelete("{id}", Name = nameof(HideBrainStorm))]
         public async Task<IActionResult> HideBrainStorm(int id)
         {
             var brainstorm = await _brainStormerDBContext.BrainStorms.FirstOrDefaultAsync(x => x.Id == id);
@@ -95,8 +101,7 @@ namespace BrainStormerBackend.Controllers.v2
             return Ok(brainstorm);
         }
 
-        [HttpPut]
-        [Route("EditBrainStorm/{id:int}")]
+        [HttpPut("{id}",Name = nameof(EditBrainStorm))]
         public async Task<IActionResult> EditBrainStorm(int id, [FromBody] CreateBrainStormRequest editBrainStormRequest)
         {
             var brainstorm = await _brainStormerDBContext.BrainStorms.FirstOrDefaultAsync(x => x.Id == id);
@@ -108,6 +113,20 @@ namespace BrainStormerBackend.Controllers.v2
             await _brainStormerDBContext.SaveChangesAsync();
             return Ok(brainstorm);
         }
+
+        private BrainStormDto createLinksForBrainStormDto(BrainStormDto brainStormDto)
+        {
+            var idObj = new { id = brainStormDto.Id };
+            brainStormDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(GetBrainStormById), values:idObj), "self", "GET"));
+            brainStormDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(SetToChosen), values: idObj), "setToChosen", "PATCH"));
+            brainStormDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(HideBrainStorm), values: idObj), "hideBrainStorm", "DELETE"));
+            brainStormDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(EditBrainStorm), values: idObj), "editBrainStorm", "PUT"));
+            brainStormDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(CreateNewBrainstorm), values: new {}), "createNewBrainStrom", "POST"));
+            return brainStormDto;
+        }
+
+
+
 
 
     }

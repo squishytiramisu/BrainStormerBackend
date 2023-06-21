@@ -96,15 +96,15 @@ namespace BrainStormerBackend.Controllers.v2
 
         private ProjectDto CreateLinksForProject(ProjectDto project)
         {
-            project.Links.Add(new LinkDto(linkGenerator.GetPathByName(nameof(GetProjectById), new { id = project.Id }), "self", "GET"));
-            project.Links.Add(new LinkDto(linkGenerator.GetPathByName(nameof(DeleteProject), new { id = project.Id }), "delete_project", "DELETE"));
+            project.Links.Add(new LinkDto(linkGenerator.GetUriByAction(HttpContext,nameof(GetProjectById), values: new { id = project.Id }), "self", "GET"));
+            project.Links.Add(new LinkDto(linkGenerator.GetUriByAction(HttpContext,nameof(DeleteProject), values: new { id = project.Id }), "delete_project", "DELETE"));
             return project;
         }
 
         private LinkedCollectionBaseDto<ProjectDto> CreateLinksForProjects(
             LinkedCollectionBaseDto<ProjectDto> projectsWrapper)
         {
-            projectsWrapper.Links.Add(new LinkDto(linkGenerator.GetPathByName(nameof(GetAllProject),new {}), "self", "GET"));
+            projectsWrapper.Links.Add(new LinkDto(linkGenerator.GetUriByAction(HttpContext,nameof(GetAllProject), values: new {}), "self", "GET"));
             return projectsWrapper;
         }
     }

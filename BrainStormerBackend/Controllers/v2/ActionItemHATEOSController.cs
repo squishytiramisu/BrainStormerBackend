@@ -1,5 +1,6 @@
 ﻿using BrainStormerBackend.Data;
 using BrainStormerBackend.Models.Entities;
+using BrainStormerBackend.Models.HATEOAS;
 using BrainStormerBackend.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,18 +22,25 @@ namespace BrainStormerBackend.Controllers.v2
         }
 
 
-        [HttpGet]
-        [Route("GetAllActionStepsBrainStormById/{id:int}")]
+        [HttpGet("byIssueId/{id}", Name = nameof(GetAllActionStepsByBrainStormId))]
         public async Task<IActionResult> GetAllActionStepsByBrainStormId(int id)
         {
             var actionSteps = await _brainStormerDBContext.ActionSteps.Where(x => x.BrainStormId == id).ToListAsync();
 
-            return Ok(actionSteps);
+            var actionStepDtos = actionSteps.Select(x => new ActionStepDto
+            {
+                Id = x.Id,
+                BrainStormId = x.BrainStormId,
+                Description = x.Description,
+            }).ToList();
+
+            var linkedActionStepDtos = actionStepDtos.Select(createLinksForActionStepDto);
+
+            return Ok(linkedActionStepDtos);
 
         }
 
-        [HttpGet]
-        [Route("GetActionStepById/{id:int}")]
+        [HttpGet("{id}", Name = nameof(GetActionStepById))]
         public async Task<IActionResult> GetActionStepById(int id)
         {
             var actionStep = await _brainStormerDBContext.ActionSteps.FirstOrDefaultAsync(x => x.Id == id);
@@ -40,11 +48,16 @@ namespace BrainStormerBackend.Controllers.v2
             {
                 return NotFound();
             }
-            return Ok(actionStep);
+            var actionStepDto = new ActionStepDto
+            {
+                Id = actionStep.Id,
+                BrainStormId = actionStep.BrainStormId,
+                Description = actionStep.Description,
+            };
+            return Ok(actionStepDto);
         }
 
-        [HttpPost]
-        [Route("CreateNewActionStep")]
+        [HttpPost(Name = nameof(CreateNewActionStep))]
         public async Task<IActionResult> CreateNewActionStep([FromBody] CreateActionStepRequest newActionStepRequest)
         {
             var actionStep = new ActionStep
@@ -57,8 +70,7 @@ namespace BrainStormerBackend.Controllers.v2
             return CreatedAtAction(nameof(GetActionStepById), new { id = actionStep.Id }, actionStep);
         }
 
-        [HttpDelete]
-        [Route("DeleteActionStepById/{id:int}")]
+        [HttpDelete("{id}", Name = nameof(DeleteActionStepById))]
         public async Task<IActionResult> DeleteActionStepById(int id)
         {
             var actionStep = await _brainStormerDBContext.ActionSteps.FirstOrDefaultAsync(x => x.Id == id);
@@ -71,5 +83,13 @@ namespace BrainStormerBackend.Controllers.v2
             return Ok();
         }
 
+
+        private ActionStepDto createLinksForActionStepDto(ActionStepDto actionStepDto)
+        {
+            actionStepDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(GetActionStepById), values: new { id = actionStepDto.Id }), "self", "GET"));
+            actionStepDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(DeleteActionStepById), values: new { id = actionStepDto.Id }), "delete_action_step", "DELETE"));
+            actionStepDto.Links.Add(new LinkDto(_linkGenerator.GetUriByAction(HttpContext, nameof(CreateNewActionStep), values: new { id = actionStepDto.Id }), "create_action_step", "POST"));
+            return actionStepDto;
+        }
     }
 }
